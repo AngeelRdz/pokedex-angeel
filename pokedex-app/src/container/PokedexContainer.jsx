@@ -2,131 +2,144 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import { withStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Pagination from "@material-ui/lab/Pagination";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { toFirstCharUppercase } from "../constants/constants";
+import { Link } from "react-router-dom";
 
-import PokemonCard from "../components/CardPokemons";
+import SearchIcon from "@material-ui/icons/Search";
+import {
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Typography,
+  CircularProgress,
+  TextField,
+  Button,
+} from "@material-ui/core";
 import styles from "../components/styles/styles-pokedex-jss";
 
 const PokedexContainer = (props) => {
   const { classes } = props;
-  const [pokemon, setPokemon] = React.useState();
-  const [result, setResult] = React.useState([]);
+  const [pokemonData, setPokemonData] = useState({});
+  const [pokemonDataExtend, setPokemonDataExtend] = useState({});
+  const [filter, setFilter] = useState("");
   const [loading, setLoading] = React.useState(false);
-  const [page, setPage] = React.useState(1);
-  const [number, setNumber] = React.useState(0);
   const arr = [];
 
   useEffect(() => {
-    getPokemons();
+    setLoading(true);
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon?limit=200`)
+      .then(function (response) {
+        const { data } = response;
+        const { results } = data;
+        const newPokemonData = {};
+        let newPokemonDataExtend = {};
+        // console.log("pokemon::::", data);
+        results.forEach((pokemon, index) => {
+          newPokemonData[index + 1] = {
+            id: index + 1,
+            name: pokemon.name,
+            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
+              index + 1
+            }.svg`,
+          };
+        });
+
+        results.map((item) => {
+          fetch(item.url)
+            .then((response) => response.json())
+            .then((allpokemon) => arr.push(allpokemon));
+          // newPokemonDataExtend = {
+          //     id: 'eee',
+          //   };
+          if (arr > 0) {
+            arr.forEach((pokemonExtend, index) => {
+              newPokemonDataExtend[index + 1] = {
+                id: index + 1,
+                type: pokemonExtend.weight,
+              };
+            });
+          }
+        });
+
+        setPokemonDataExtend(arr);
+        setPokemonData(newPokemonData);
+
+        console.log("array", newPokemonDataExtend, arr);
+      });
   }, []);
-
-  const getPokemons = async (value) => {
-    try {
-      setLoading(true);
-      const URL = `https://pokeapi.co/api/v2/pokemon/?offset=${number}&limit=50`;
-      const res = await axios.get(URL);
-      const data = res.data.results;
-      setResult(
-        data.map((item) => {
-          fetch(item.url)
-            .then((response) => response.json())
-            .then((allpokemon) => arr.push(allpokemon));
-          setPokemon(arr);
-          setNumber(50);
-          console.log("array", arr);
-        })
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getPokemonsPaginationNext = async (result) => {
-    try {
-      setLoading(true);
-      let URL = `https://pokeapi.co/api/v2/pokemon/?offset=${result}&limit=50`;
-      const res = await axios.get(URL);
-      const data = res.data.results;
-      const nextElements = res.data.next;
-      console.log("nextElements:", nextElements);
-      setResult(
-        data.map((item) => {
-          fetch(item.url)
-            .then((response) => response.json())
-            .then((allpokemon) => arr.push(allpokemon));
-          setPokemon(arr);
-          console.log("nuevo array", arr);
-        })
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   setTimeout(() => {
     setLoading(false);
   }, 1000);
 
-  const handlePageChange = (event, value) => {
-    console.log("value", value);
-    if (value === 1) {
-      value = 0;
-    }
-    const result = value * 50;
-    setPage(value);
-    console.log("result:::", result);
-    setNumber(result);
-    getPokemonsPaginationNext(result);
+  const handleSearchChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  const getPokemonCard = (pokemonId) => {
+    const { id, name, sprite } = pokemonData[pokemonId];
+
+    return (
+      <Grid item lg={3} md={4} sm={6} xs={6} key={pokemonId}>
+        <div className={classes.pokemonCard}>
+          <Card className={classes.card}>
+            <CardMedia
+              className={classes.media}
+              image={sprite}
+              title="Pokemon"
+            />
+            <CardContent className={classes.cardContent}>
+              <Typography className={classes.namePokemonId}>
+                {`${id}. ${toFirstCharUppercase(name)}`}
+              </Typography>
+            </CardContent>
+            <CardActions disableSpacing className={classes.containerButton}>
+              <Button
+                className={classes.buttonShowPokemon}
+                component={Link}
+                to={`/pokemon/${id}`}
+              >
+                Ver
+              </Button>
+            </CardActions>
+          </Card>
+        </div>
+      </Grid>
+    );
   };
 
   return (
-    <Grid container spacing={12}>
+    <div className={classes.containerCard}>
+      <div className={classes.searchContainer}>
+        <SearchIcon className={classes.searchIcon} />
+        <TextField
+          className={classes.searchInput}
+          onChange={handleSearchChange}
+          label="¡Busca a tu Pokémon!"
+          variant="standard"
+        />
+      </div>
       {loading ? (
         <div className={classes.containerProgress}>
           <CircularProgress />
         </div>
-      ) : pokemon ? (
-        pokemon.map((pokemonCard) => {
-          return (
-            <Grid
-              item
-              lg={3}
-              md={4}
-              sm={6}
-              xs={6}
-              id={pokemonCard.id}
-              key={pokemonCard.id}
-            >
-              <PokemonCard
-                idPokemon={pokemonCard.id}
-                srcPokemon={pokemonCard.sprites.other.dream_world.front_default}
-                namePokemon={pokemonCard.name}
-                typePokemon={pokemonCard.types[0].type.name}
-                weightPokemon={pokemonCard.weight}
-                baseExperiencePokemon={pokemonCard.base_experience}
-                heightPokemon={pokemonCard.height}
-              />
-            </Grid>
-          );
-        })
+      ) : pokemonData ? (
+        <Grid container spacing={12}>
+          {Object.keys(pokemonData).map(
+            (pokemonId) =>
+              pokemonData[pokemonId].name.includes(filter) &&
+              getPokemonCard(pokemonId)
+          )}
+        </Grid>
       ) : (
         <div className={classes.containerProgress}>
           <CircularProgress />
         </div>
       )}
-      <div className={classes.containerPagination}>
-        <Pagination
-          count={12}
-          boundaryCount={12}
-          page={page}
-          siblingCount={0}
-          onChange={handlePageChange}
-          size="large"
-        />
-      </div>
-    </Grid>
+    </div>
   );
 };
 

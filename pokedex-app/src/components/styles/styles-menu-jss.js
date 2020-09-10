@@ -23,7 +23,7 @@ const styles = (theme) => ({
     marginLeft: 0,
   },
   appBarBackground: {
-    backgroundColor: "#d80606",
+    backgroundColor: "#dc3545",
   },
   drawer: {
     width: 240,

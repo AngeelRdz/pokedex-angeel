@@ -16,6 +16,7 @@ const PokemonByIdContainer = (props) => {
   const [imagePokemon, setImagePokemon] = React.useState();
   const [movesPokemon, setMovesPokemon] = React.useState();
   const [habilitiesPokemon, setHabilitiesPokemon] = React.useState();
+  const [typesPokemon, setTypesPokemon] = React.useState();
   const [dataPokemonById, setDataPokemonById] = React.useState([]);
 
   useEffect(() => {
@@ -31,27 +32,30 @@ const PokemonByIdContainer = (props) => {
       console.log("Elements pokemon ID:", data);
       setDataPokemonById(data);
       const movesPokemonById = data.moves;
-      console.log("Moves::", movesPokemonById);
+    //   console.log("Moves::", movesPokemonById);
       const habilitiesPokemonById = data.abilities;
-      console.log("Abilities::", habilitiesPokemonById);
+    //   console.log("Abilities::", habilitiesPokemonById);
+      const typesPokemonById = data.types;
+    //   console.log("Types::", typesPokemonById);
       const imagePokemonById = data.sprites.other.dream_world.front_default;
-      console.log("imagePokemon::", imagePokemonById);
+    //   console.log("imagePokemon::", imagePokemonById);
       setImagePokemon(imagePokemonById);
       setMovesPokemon(movesPokemonById);
       setHabilitiesPokemon(habilitiesPokemonById);
+      setTypesPokemon(typesPokemonById);
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log("pokemonById::", dataPokemonById);
+//   console.log("pokemonById::", dataPokemonById);
 
   setTimeout(() => {
     setLoading(false);
   }, 1000);
 
   return (
-    <Grid container spacing={12}>
+    <Grid container spacing={12} className={classes.containerData}>
       {loading ? (
         <div className={classes.containerProgress}>
           <CircularProgress />
@@ -60,6 +64,10 @@ const PokemonByIdContainer = (props) => {
         <PokemonCharacters
           idPokemon={dataPokemonById.id}
           namePokemon={dataPokemonById.name}
+          typePokemon={typesPokemon}
+          weightPokemon={dataPokemonById.weight}
+          baseExperiencePokemon={dataPokemonById.base_experience}
+          heightPokemon={dataPokemonById.height}
           srcPokemon={imagePokemon}
           movesPokemon={movesPokemon}
           habilitiesPokemon={habilitiesPokemon}

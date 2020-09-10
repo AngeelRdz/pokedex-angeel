@@ -16,6 +16,7 @@ import HomeContainer from "./container/HomeContainer";
 import PokedexContainer from "./container/PokedexContainer";
 import Navigation from "./components/Navigation";
 import PokemonByIdContainer from "./container/PokemonByIdContainer";
+import PokemonEvolutionsContainer from "./container/PokemonEvolutionsContainer";
 
 import styles from "./components/styles/styles-menu-jss";
 
@@ -105,6 +106,9 @@ function App(props) {
             </Route>
             <Route exact path="/pokemon/:id">
               <PokemonByIdContainer />
+            </Route>
+            <Route exact path="/pokemonEvolutions/:id">
+              <PokemonEvolutionsContainer />
             </Route>
             <Route>
               <h1>404 Not found</h1>
