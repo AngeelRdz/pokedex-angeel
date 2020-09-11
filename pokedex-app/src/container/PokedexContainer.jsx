@@ -25,7 +25,7 @@ const PokedexContainer = (props) => {
   const [pokemonDataExtend, setPokemonDataExtend] = useState({});
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = React.useState(false);
-  const [offset, setOffset] = React.useState("0");
+  const [offset, setOffset] = React.useState(0);
   const arr = [];
 
   useEffect(() => {
@@ -62,7 +62,8 @@ const PokedexContainer = (props) => {
                     id: index + 1,
                     name: pokemonExtend.name,
                     types: pokemonExtend.types,
-                    sprite: pokemonExtend.sprites.other.dream_world.front_default,
+                    sprite:
+                      pokemonExtend.sprites.other.dream_world.front_default,
                   };
                 });
               }
@@ -85,8 +86,7 @@ const PokedexContainer = (props) => {
   };
 
   const handleMoreClick = () => {
-    console.log("me diste click");
-    setOffset((offset + 20));
+    setOffset((prevOffset) => prevOffset + 20);
   };
 
   const getPokemonCard = (pokemonId) => {
@@ -151,7 +151,7 @@ const PokedexContainer = (props) => {
         <Grid container spacing={12}>
           {Object.keys(pokemonDataExtend).map(
             (pokemonId) =>
-            pokemonDataExtend[pokemonId].name.includes(filter) &&
+              pokemonDataExtend[pokemonId].name.includes(filter) &&
               pokemonDataExtend[pokemonId] &&
               getPokemonCard(pokemonId)
           )}
