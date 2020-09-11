@@ -105,8 +105,8 @@ const styles = (theme) => ({
   namePokemonId: {
     textOverflow: "ellipsis",
     fontSize: 20,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
+    overflow: "hidden",
+    whiteSpace: "nowrap",
     "@media (max-width: 700px)": {
       fontSize: 16,
     },
@@ -114,6 +114,33 @@ const styles = (theme) => ({
       fontSize: 14,
     },
   },
+  textTypesPokemons: {
+    color: '#3760ab',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  spanTypesPokemons: {
+    color: '#ffffff',
+    margin: '0px 5px auto',
+    fontWeight: 300,
+  },
+  containerButtonShowMorePokemon: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: '100%',
+    margin: '5% 0 5% 0',
+  },
+  buttonShowMorePokemon: {
+    backgroundColor: "#3760ab",
+    color: "#ffc918",
+    width: "100%",
+    maxWidth: 120,
+    "&:hover": {
+      backgroundColor: "#ffc918",
+      color: "#3760ab",
+    },
+  }
 });
 
 export default styles;

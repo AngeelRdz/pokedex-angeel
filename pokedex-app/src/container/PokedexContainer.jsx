@@ -25,12 +25,20 @@ const PokedexContainer = (props) => {
   const [pokemonDataExtend, setPokemonDataExtend] = useState({});
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = React.useState(false);
+  const [offset, setOffset] = React.useState("0");
   const arr = [];
 
   useEffect(() => {
+    getPokemons();
+    return () => {
+      console.log("destruido");
+    };
+  }, [offset]);
+
+  const getPokemons = () => {
     setLoading(true);
     axios
-      .get(`https://pokeapi.co/api/v2/pokemon?limit=200`)
+      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`)
       .then(function (response) {
         const { data } = response;
         const { results } = data;
@@ -40,36 +48,33 @@ const PokedexContainer = (props) => {
         results.forEach((pokemon, index) => {
           newPokemonData[index + 1] = {
             id: index + 1,
-            name: pokemon.name,
-            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
-              index + 1
-            }.svg`,
           };
         });
 
         results.map((item) => {
           fetch(item.url)
             .then((response) => response.json())
-            .then((allpokemon) => arr.push(allpokemon));
-          // newPokemonDataExtend = {
-          //     id: 'eee',
-          //   };
-          if (arr > 0) {
-            arr.forEach((pokemonExtend, index) => {
-              newPokemonDataExtend[index + 1] = {
-                id: index + 1,
-                type: pokemonExtend.weight,
-              };
+            .then((allpokemon) => arr.push(allpokemon))
+            .then((data) => {
+              if (data) {
+                arr.forEach((pokemonExtend, index) => {
+                  newPokemonDataExtend[index + 1] = {
+                    id: index + 1,
+                    name: pokemonExtend.name,
+                    types: pokemonExtend.types,
+                    sprite: pokemonExtend.sprites.other.dream_world.front_default,
+                  };
+                });
+              }
             });
-          }
         });
 
-        setPokemonDataExtend(arr);
         setPokemonData(newPokemonData);
+        setPokemonDataExtend(newPokemonDataExtend);
 
-        console.log("array", newPokemonDataExtend, arr);
+        console.log("data", newPokemonData, newPokemonDataExtend, arr);
       });
-  }, []);
+  };
 
   setTimeout(() => {
     setLoading(false);
@@ -79,8 +84,14 @@ const PokedexContainer = (props) => {
     setFilter(e.target.value);
   };
 
+  const handleMoreClick = () => {
+    console.log("me diste click");
+    setOffset((offset + 20));
+  };
+
   const getPokemonCard = (pokemonId) => {
-    const { id, name, sprite } = pokemonData[pokemonId];
+    const { id } = pokemonData[pokemonId];
+    const { name, types, sprite } = pokemonDataExtend[pokemonId];
 
     return (
       <Grid item lg={3} md={4} sm={6} xs={6} key={pokemonId}>
@@ -94,6 +105,16 @@ const PokedexContainer = (props) => {
             <CardContent className={classes.cardContent}>
               <Typography className={classes.namePokemonId}>
                 {`${id}. ${toFirstCharUppercase(name)}`}
+              </Typography>
+              <Typography className={classes.textTypesPokemons}>
+                Tipo:
+                {types.map((type) => {
+                  return (
+                    <span className={classes.spanTypesPokemons}>
+                      {type.type.name}
+                    </span>
+                  );
+                })}
               </Typography>
             </CardContent>
             <CardActions disableSpacing className={classes.containerButton}>
@@ -126,13 +147,23 @@ const PokedexContainer = (props) => {
         <div className={classes.containerProgress}>
           <CircularProgress />
         </div>
-      ) : pokemonData ? (
+      ) : pokemonDataExtend ? (
         <Grid container spacing={12}>
-          {Object.keys(pokemonData).map(
+          {Object.keys(pokemonDataExtend).map(
             (pokemonId) =>
-              pokemonData[pokemonId].name.includes(filter) &&
+            pokemonDataExtend[pokemonId].name.includes(filter) &&
+              pokemonDataExtend[pokemonId] &&
               getPokemonCard(pokemonId)
           )}
+          <div className={classes.containerButtonShowMorePokemon}>
+            <Button
+              className={classes.buttonShowMorePokemon}
+              type="button"
+              onClick={handleMoreClick}
+            >
+              Ver más
+            </Button>
+          </div>
         </Grid>
       ) : (
         <div className={classes.containerProgress}>

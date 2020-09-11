@@ -10,6 +10,7 @@ import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
 import { Link } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
 
 import styles from "./styles/styles-pokemon-by-id-jss";
 
@@ -98,7 +99,7 @@ const PokemonCharacters = (props) => {
           </div>
         </div>
       </Paper>
-      {/* <div>
+      <div>
         <Button
           variant="contained"
           size="small"
@@ -108,7 +109,7 @@ const PokemonCharacters = (props) => {
         >
           Ver evoluciones
         </Button>
-      </div> */}
+      </div>
       <AppBar
         position="static"
         color="default"
