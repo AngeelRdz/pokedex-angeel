@@ -15,6 +15,8 @@ const PokemonEvolutionsContainer = (props) => {
   const [pokemonEvolutionId, setPokemonEvolutionId] = React.useState(url[4]);
   const [dataPokemonEvolutions, setDataPokemonEvolutions] = React.useState([]);
   const evoChain = [];
+  const evoChain2 = [];
+  const evoChain3 = [];
 
   useEffect(() => {
     getPokemonEvolutions();
@@ -29,20 +31,40 @@ const PokemonEvolutionsContainer = (props) => {
       console.log("Data pokemon evoluciones:", evoData);
 
       let evoDetails = evoData["evolution_details"][0];
-      let evolvesTo = evoData["evolves_to"];
+      // console.log('evoDetails:::', evoDetails);
+      let evolvesTwoEvolution = evoData["evolves_to"][0] !== undefined ? evoData["evolves_to"][0] : '';
+      console.log('evolvesTwoEvolution:::', evolvesTwoEvolution);
+      let evolvesThreeEvolution = evolvesTwoEvolution !== '' ? evolvesTwoEvolution["evolves_to"][0] : '';
+      console.log('evolvesThreeEvolution:::', evolvesThreeEvolution);
 
       evoChain.push({
         species_name: evoData.species.name,
         min_level: !evoDetails ? 1 : evoDetails.min_level,
         trigger_name: !evoDetails ? null : evoDetails.trigger.name,
-        item: !evoDetails ? null : evoDetails.item,
+        item: !evoDetails ? null : evoDetails.item
       });
 
-      evoData = evoData["evolves_to"][0];
-      console.log("evolvesTo:", evolvesTo);
+      evoChain2.push({
+        species_name: !evolvesTwoEvolution ? null : evolvesTwoEvolution.species.name,
+        min_level: evolvesTwoEvolution.evolution_details === undefined ? 1 : evolvesTwoEvolution.evolution_details[0].min_level,
+        trigger_name: evolvesTwoEvolution.evolution_details === undefined ? null : evolvesTwoEvolution.evolution_details[0].trigger.name,
+        item: evolvesTwoEvolution.evolution_details === undefined ? null : evolvesTwoEvolution.evolution_details[0].item
+      });
 
-      setDataPokemonEvolutions(evoChain);
-      console.log("evoChain::", evoChain);
+      evoChain3.push({
+        species_name: !evolvesThreeEvolution ? null : evolvesThreeEvolution.species.name,
+        min_level: evolvesThreeEvolution === undefined ? 1 : evolvesThreeEvolution.evolution_details === undefined ? 1 : evolvesThreeEvolution.evolution_details[0].min_level,
+        trigger_name: evolvesThreeEvolution === undefined ? '' : evolvesThreeEvolution.evolution_details === undefined ? null : evolvesThreeEvolution.evolution_details[0].trigger.name,
+        item: evolvesThreeEvolution === undefined ? '' : evolvesThreeEvolution.evolution_details === undefined ? null : evolvesThreeEvolution.evolution_details[0].item
+      });
+
+      const concatEvoChain = evoChain.concat(evoChain2, evoChain3);
+
+      evoData = evoData["evolves_to"][0];
+      console.log("evolvesTo:", evolvesTwoEvolution);
+
+      setDataPokemonEvolutions(concatEvoChain);
+      console.log("evoChain::", concatEvoChain);
     } catch (error) {
       console.log(error);
     }

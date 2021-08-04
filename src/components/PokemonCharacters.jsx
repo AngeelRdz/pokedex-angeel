@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
@@ -11,6 +12,11 @@ import Box from "@material-ui/core/Box";
 import { Link } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import styles from "./styles/styles-pokemon-by-id-jss";
 
@@ -50,10 +56,61 @@ function a11yProps(index) {
 const PokemonCharacters = (props) => {
   const { classes } = props;
   const [value, setValue] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [fullWidth, setFullWidth] = React.useState(true);
+  const [maxWidth, setMaxWidth] = React.useState('sm');
+  const [effectsPokemon, setEffectsPokemon] = React.useState();
+  const [effectsShortPokemon, setEffectsShortPokemon] = React.useState();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const handleOpen = (url) => {
+    console.log('jajaja', url);
+    getPokemonAbilities(url)
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const getPokemonAbilities = async (url) => {
+    try {
+      setLoading(true);
+      let URL = `${url}`;
+      const res = await axios.get(URL);
+      const data = res.data;
+      console.log("Elements pokemon abilities:", data);
+
+      const effectsPokemons = data.effect_entries;
+      console.log("Moves::", effectsPokemons);
+      const effect = effectsPokemons.filter(word => word.language.name === 'en');
+      console.log('filter:', effect);
+      const effectNormal = effect[0].effect;
+      const effectShort = effect[0].short_effect;
+
+    //   const habilitiesPokemonById = data.abilities;
+    // //   console.log("Abilities::", habilitiesPokemonById);
+    //   const typesPokemonById = data.types;
+    // //   console.log("Types::", typesPokemonById);
+    //   const imagePokemonById = data.sprites.other.dream_world.front_default;
+    // //   console.log("imagePokemon::", imagePokemonById);
+    //   setImagePokemon(imagePokemonById);
+    setEffectsPokemon(effectNormal);
+    setEffectsShortPokemon(effectShort);
+    //   setHabilitiesPokemon(habilitiesPokemonById);
+    //   setTypesPokemon(typesPokemonById);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  setTimeout(() => {
+    setLoading(false);
+  }, 1000);
 
   return (
     <div className={classes.pokemonCharactersContainer}>
@@ -132,10 +189,14 @@ const PokemonCharacters = (props) => {
         {props.habilitiesPokemon ? (
           props.habilitiesPokemon.map((ability) => {
             return (
-              <Typography className={classes.textTabs}>
-                {ability.ability.name}
-                {ability.ability.url}
-              </Typography>
+              <div>
+                <Typography className={classes.textTabs}>
+                  {ability.ability.name}
+                </Typography>
+                <Button onClick={()=>handleOpen(ability.ability.url)}>
+                  Detalle de la habilidad
+                </Button>
+              </div>
             );
           })
         ) : (
@@ -159,6 +220,34 @@ const PokemonCharacters = (props) => {
           </div>
         )}
       </TabPanel>
+      <Dialog
+        fullWidth={fullWidth}
+        maxWidth={maxWidth}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="max-width-dialog-title"
+      >
+        <DialogTitle id="max-width-dialog-title">Optional sizes</DialogTitle>
+        <DialogContent>
+            <DialogContentText>
+              {loading ? (
+                <div className={classes.containerProgress}>
+                  <CircularProgress />
+                </div>
+                ) : (
+                  <div>
+                    <Typography>{effectsPokemon}</Typography>
+                    <Typography>{effectsShortPokemon}</Typography>
+                  </div>
+              )}
+            </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={handleClose} color="primary">
+                Close
+            </Button>
+        </DialogActions>
+      </Dialog>   
     </div>
   );
 };

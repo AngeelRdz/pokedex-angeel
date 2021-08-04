@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 
-import styles from "./styles/styles-pokemon-by-id-jss";
+import styles from "./styles/styles-pokemon-evolutions-jss";
 
 
 const PokemonEvolutions = (props) => {
@@ -17,7 +17,7 @@ const PokemonEvolutions = (props) => {
         {props.infoPokemon ? (
           props.infoPokemon.map((info) => {
             return (
-              <Typography variant="h6" component="h6">
+              <Typography variant="h6" component="h6" className={classes.titleEvolutionPokemons}>
                 {info.species_name}
               </Typography>
             );

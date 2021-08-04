@@ -48,7 +48,7 @@ const PokemonByIdContainer = (props) => {
     }
   };
 
-//   console.log("pokemonById::", dataPokemonById);
+  // console.log("pokemonById::", dataPokemonById);
 
   setTimeout(() => {
     setLoading(false);

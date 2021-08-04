@@ -38,13 +38,13 @@ const PokedexContainer = (props) => {
   const getPokemons = () => {
     setLoading(true);
     axios
-      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`)
+      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=151`)
       .then(function (response) {
         const { data } = response;
         const { results } = data;
         const newPokemonData = {};
         let newPokemonDataExtend = {};
-        // console.log("pokemon::::", data);
+        console.log("pokemon::::", data);
         results.forEach((pokemon, index) => {
           newPokemonData[index + 1] = {
             id: index + 1,
@@ -73,7 +73,7 @@ const PokedexContainer = (props) => {
         setPokemonData(newPokemonData);
         setPokemonDataExtend(newPokemonDataExtend);
 
-        console.log("data", newPokemonData, newPokemonDataExtend, arr);
+        // console.log("data", newPokemonData, newPokemonDataExtend, arr);
       });
   };
 
