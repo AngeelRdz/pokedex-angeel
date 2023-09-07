@@ -36,9 +36,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@testing-library/dom": "^9.3.1",
-    "netlify-cli": "^5.4.12"
   }
 }
