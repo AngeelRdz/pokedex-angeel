@@ -29,7 +29,7 @@ const HomeContainer = (props) => {
               component={Link}
               to="/pokedex"
             >
-              Iniciar
+              Ver pokedex
             </Button>
           </div>
         </div>
